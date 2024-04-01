@@ -8,11 +8,20 @@ const port = process.env.PORT || 4321;
 // middleware
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://task-master-client96.web.app"],
     credentials: true,
   })
 );
 app.use(express.json());
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'https://task-master-client96.web.app');
+  // Additional headers you may need
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 const verifyToken = (req, res, next) => {
   // console.log("inside middleware", req.headers.authorization);
@@ -44,7 +53,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const taskCollection = client.db("task-master").collection("task");
     const userCollection = client.db("task-master").collection("user");
